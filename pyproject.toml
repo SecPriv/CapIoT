@@ -1,6 +1,6 @@
 [project]
 name = "capiot"
-version = "0.1.0"
+version = "1.0.0"
 description = "CapIoT - Capture IoT traffic and automate experiments"
 readme = "README.md"
 requires-python = ">=3.12"
