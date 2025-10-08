@@ -1,0 +1,3 @@
+# NOTE: Auto-generated for Android. For iOS, add the coordinates manually.
+tap 200 300
+tap 200 300

@@ -1,0 +1,114 @@
+###############################################################################
+# CapIoT configuration (v1)
+# ---------------------------------------------------------------------------
+# • All paths may start with ~ and are resolved to absolute paths.
+# • Leave optional keys commented-out (#) unless you need them.
+# • Exactly ONE of the platform-specific blocks (android | ios) must be
+#   present
+###############################################################################
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ▶  PROFILE SELECTION                                                        │
+# ─────────────────────────────────────────────────────────────────────────────
+# network_profile decides where packets are captured:
+#   lan  – IoT device and capture server share the same network.
+#   wan  – capture happens in addition on a *remote* server (requires SSH credentials).
+network_profile: lan            # lan | wan
+
+# OS of the smartphone used to drive the IoT app.
+platform: android               # android | ios
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ▶  CORE CAPTURE INTERFACES                                                  │
+# ─────────────────────────────────────────────────────────────────────────────
+# Name of the *server* NIC that sees the IoT traffic (e.g. wlan0, enp1s0,...).
+# CapIoT runs tcpdump here.
+server_interface: wlan0
+
+# Name of the *phone* network interface.
+phone_interface: wlan0
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ▶  OUTPUT & EXPERIMENT METADATA                                             │
+# ─────────────────────────────────────────────────────────────────────────────
+# CapIoT creates one timestamped sub-dir per run.
+output_path: ~/capiot/experiments/android
+
+# How many iterations for each phase.
+no_frida_iterations:  10        # plain capture (no instrumentation)
+frida_iterations:     10        # with traffic interception (mitm+frida)
+
+# When using screenshot comparison, similarity below this value
+# (0–1) marks the iteration as failed.
+image_similarity_threshold: 0.99
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ▶  USER-INTERACTION REPLAY                                                  │
+# ─────────────────────────────────────────────────────────────────────────────
+# Directory that contains baseline_images and \<device\>.txt with recorded “tap  X  Y” lines.
+tap_coordinates_path: ~/capiot/coordinates/android
+
+# JSON file that maps each IoT device name to one or more crop regions
+# (x,y,width,height) for image similarity checks.
+image_crop_regions_path: ~/capiot/image_crop_data_android.json
+
+# Optional YAML that defines per-action sleeps.  CapIoT watches mtime and
+# reloads between iterations, so you can tune timings without stopping the run.
+#sleep_times_path: ~/capiot/sleep_times.yaml
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ▶  IPTABLES SCRIPTS                                                         │
+# ─────────────────────────────────────────────────────────────────────────────
+# These shell scripts run before/after each FRIDA iteration to redirect all
+# phone traffic into mitmdump.  Must be executable on the capture server.
+iptables_script_up_path:   ~/capiot/scripts/android/iptables_up.sh
+iptables_script_down_path: ~/capiot/scripts/android/iptables_down.sh
+
+
+###############################################################################
+# ===  ANDROID section (required when platform == 'android')               ===
+###############################################################################
+android:
+  # PCAPdroid Automation → API key.  Required for starting/stopping captures.
+  pcapdroid_api_key: "REPLACE_WITH_REAL_KEY"
+
+  # Directory *on the phone* where PCAPdroid writes its .pcap files.
+  pcap_download_path: /storage/emulated/0/Download/PCAPdroid
+
+  # Absolute path to the Bluetooth HCI snoop log on Android 12+ (root needed).
+  # Bluetooth HCI snoop logging needs to be enabled in the *Developer options*.
+  bluetooth_log_path: /data/misc/bluetooth/logs/btsnoop_hci.log
+
+
+###############################################################################
+# ===  iOS section (required when platform == 'ios')                       ===
+###############################################################################
+#ios:
+#  # SSH access to jail-broken device; used only to start/stop tcpdump and
+#  # pull the resulting .pcap file.  Supply either key_path **or** password.
+#  ssh:
+#    host:  192.168.1.42          # Wi-Fi IP of the iPhone
+#    username: mobile
+#    port: 22
+#    #key_path: ~/.ssh/id_ed25519
+#    #password: "alpine"
+#
+#  # Where tcpdump running *on the phone* writes the capture.
+#  phone_pcap_save_path: /tmp/captures
+
+
+###############################################################################
+# ===  WAN-only section (required only when network_profile == 'wan')      ===
+###############################################################################
+#remote_server_ssh:
+#  host:     203.0.113.17
+#  username: capiot
+#  port:     22
+#  key_path: ~/.ssh/capture_box        # or password:
+#  #password: "Secret123!"
+#
+#remote_server_interface: enp1s0    # NIC on the *remote* server

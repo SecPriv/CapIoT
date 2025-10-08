@@ -1,0 +1,19 @@
+# Sleep times (in seconds).
+# You can edit this file while a run is in progress; the tool hot-reloads it.
+# Missing keys fall back to built-in defaults.
+
+# Wait after launching the app before interacting
+start_app: 15
+
+# Wait after stopping the app
+stop_app: 10
+
+# Delay after each "tap X Y" before taking the screenshot
+after_tap: 2
+
+# Delay after running the screenshot similarity check before continuing
+after_similarity: 9
+
+# Collection window after UI interaction(s): keep capturing so that
+# all network traffic triggered by the action is included in the pcap.
+between_iterations: 300

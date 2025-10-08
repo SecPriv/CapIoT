@@ -1,0 +1,44 @@
+[project]
+name = "capiot"
+version = "0.1.0"
+description = "CapIoT - Capture IoT traffic and automate experiments"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dependencies = [
+  "pytest",
+  "typer>=0.12",
+  "pydantic>=2.7",
+  "pyyaml>=6.0",
+  "opencv-python",
+  "scikit-image",
+  "paramiko",
+  "mitmproxy==11.1.3",
+  "facebook-wda==1.5.4",
+  "scp",
+  "bcrypt==4.0.1"
+]
+
+[project.optional-dependencies]
+android = [
+  "frida==17.2.12",
+  "frida-tools==14.4.5",
+]
+ios = [
+  "frida==16.7.19",
+  "frida-tools==13.7.1",
+  "objection"
+]
+
+[project.scripts]
+capiot = "capiot.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
